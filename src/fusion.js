@@ -85,4 +85,54 @@ const getReverseFusings = ((desired) => {
   }
 })
 
-let {name, cost, combos} = getReverseFusings('Artemis')
+const populateNode = ((combos, node) => {
+  combos.forEach(combo => {
+    node.nodes.push({
+      l: { 
+        name: combo.demon1.name,
+        nodes: []
+      },
+      r: {
+        name: combo.demon2.name,
+        nodes: []
+      }
+    })
+  })
+})
+
+const processNode = ((node) => {
+  node.nodes.forEach(node => {
+    doProcessNode(node.l)
+    doProcessNode(node.r)
+  })
+})
+
+let cache = {}
+const doProcessNode = ((node => {
+  if (node.nodes.length == 0) {
+    let fcombos = []
+    if (cache[node.name] !== undefined) {
+      fcombos = cache[node.name]
+    } else {
+      let {name, cost, combos} = getReverseFusings(node.name)
+      cache[node.name] = combos
+      fcombos = combos
+    }
+    if (fcombos.length != 0) {
+      populateNode(fcombos, node)
+      processNode(node)
+    }
+  } else {
+    node.nodes.forEach(node2 => {
+      processNode(node2)
+    })
+  }
+}))
+
+let tree = {
+  name: 'Artemis',
+  nodes: []
+}
+
+doProcessNode(tree)
+console.log(JSON.stringify(tree))
