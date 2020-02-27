@@ -5,27 +5,10 @@ const JSON_CACHE = 'p:/work/javascript/scraper/cache/demons.json'
 exports.load = (() => {
   let demons = JSON.parse(fs.readFileSync(JSON_CACHE, 'utf8'))
 
-  // work out the variations
-  let parsedDemons = {}
-  Object.keys(demons).forEach((key) => {
-    let demon = demons[key]
-    let variations = demon.variations
-    let base = true
-    for (let i = 0; i < variations.length; i++) {
-      if (variations[i].length < demon.name.length) {
-        // we are a variation, the demon at i is the real demon
-        base = false
-        break;
-      }
-    }
-    if (base) {
-      parsedDemons[demon.name] = demon
-    }
-  })
   let familyMap = {}
 
-  Object.keys(parsedDemons).forEach((key) => {
-    let demon = parsedDemons[key]
+  Object.keys(demons).forEach((key) => {
+    let demon = demons[key]
     let race = demon.stats.Race
     if (demon.familyCombinations !== undefined &&
       demon.familyCombinations.length !== 0 &&
@@ -53,7 +36,7 @@ exports.load = (() => {
   })
 
   return {
-    demons: parsedDemons,
+    demons: demons,
     familyMap: familyMap
   }
 })
